@@ -1,7 +1,71 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { KeyboardAvoidingView, View, StyleSheet,TouchableOpacity, Text, Image, TextInput} from 'react-native'
+import { FIRESTORE_DB } from '../../../firebaseConfig'
+import { addDoc, collection } from 'firebase/firestore'
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { Feather } from '@expo/vector-icons';
 
     export default Register = ({ navigation }) => {
+        const [email, setEmail] = useState('')
+        const [name, setName] = useState('')
+        const [password, setPassword] = useState('')
+        const [correctEmail, setCorrectEmail] = useState('')
+        const [correctPassword, setCorrectPassword] = useState('')
+        const [seePassword, setSeePassword] = useState(false)
+        const [showPasswordMessage, setShowPasswordMessage] = useState(false)
+        const [showEmailMessage , setShowEmailMessage] = useState(false)
+
+        const addTodo = async ()=> {
+            const doc = addDoc(collection(FIRESTORE_DB, ''), {title:'Im a test', done: false})
+        }
+
+
+        const createUser =() =>{
+            const auth = getAuth();
+            createUserWithEmailAndPassword(auth, email, password, name)
+            .then((userCredential) => {
+                // Signed in 
+                const user = userCredential.user;
+                user.displayName = name
+                // ...
+            })
+            .catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                alert(errorMessage);
+                // ..
+            });
+
+        }
+
+        function validateEmail(text){
+            if (text.indexOf('@') != -1 && text[0] != '@' && text[text.length - 1] != '@'){
+                setCorrectEmail(true);
+                setShowEmailMessage(false);
+            }else{
+                setCorrectEmail(false);
+                setShowEmailMessage(true);
+            }
+            setEmail(text)
+        }
+
+        function validatePassword(text){
+            if(text.length >= 7 && /[A-Z]/.test(text)){
+                setCorrectPassword(true)
+                setShowPasswordMessage(false)
+            }else{
+                setCorrectPassword(false)
+                setShowPasswordMessage(true)
+            }
+            setPassword(text)
+        }
+
+        const validateRegister = () => {
+            if(correctPassword && correctEmail){
+                createUser()
+            }
+        }
+
         return (
             <KeyboardAvoidingView style={styles.background}>
                 <View style={styles.containerLogo}>
@@ -15,22 +79,34 @@ import { KeyboardAvoidingView, View, StyleSheet,TouchableOpacity, Text, Image, T
                         style={styles.input}
                         placeholder='Nome'
                         autoCorrect={false}
-                        onChangeText={()=>{}}
+                        onChangeText={(e)=>{setName(e)}}
                     />
                     <TextInput
-                        style={styles.input}
+                        style={[styles.input, correctEmail ? styles.inputRightArea : styles.inputWrongArea]}
                          placeholder='Email'
                          autoCorrect={false}
-                         onChangeText={()=>{}}
+                         onChangeText={(e)=>{validateEmail(e)}}
                     />
-                    <TextInput
-                        style={styles.input}
-                         placeholder='Senha'
-                         autoCorrect={false}
-                         onChangeText={()=>{}}
-                    />
-
-                    <TouchableOpacity onPress={()=>{navigation.navigate('Login')}} style={styles.btnSubmit}>
+                    {showEmailMessage && <Text style={styles.passwordError}>Email Inválido</Text>}
+                    <View style={[styles.inputPasswordArea, correctPassword ? styles.inputRightArea : styles.inputWrongArea]}>
+                        <TextInput
+                        style={styles.inputPassword}
+                        placeholder='Senha'
+                        autoCorrect={false}
+                        onChangeText={(e)=>{validatePassword(e)}}
+                        secureTextEntry={!seePassword}
+                        /> 
+                        {!seePassword ? 
+                        <TouchableOpacity onPress={()=>{setSeePassword(!seePassword)}} style={styles.iconEye}>
+                            <Feather style={styles.iconEye}  name="eye" size={24} />
+                        </TouchableOpacity> :
+                        <TouchableOpacity onPress={()=>{setSeePassword(!seePassword)}} style={styles.iconEye}>
+                            <Feather style={styles.iconEye}  name="eye-off" size={24} />
+                        </TouchableOpacity>
+                        }
+                    </View> 
+                    {showPasswordMessage && <Text style={styles.passwordError}>A senha deve ter no mínimo 8 caracteres e uma letra maiúscula</Text>}
+                    <TouchableOpacity onPress={validateRegister} style={styles.btnSubmit}>
                         <Text style={styles.loginText}>Cadastrar</Text>
                     </TouchableOpacity>
                     <View style={styles.contentNotAccount}>
@@ -78,6 +154,14 @@ import { KeyboardAvoidingView, View, StyleSheet,TouchableOpacity, Text, Image, T
             alignItems: 'center',
             justifyContent: 'center',
         },
+        passwordError:{
+            color: 'red',
+            width: '80%',
+            textAlign: 'left',
+            marginBottom: 20,
+            marginLeft: -30,
+            marginTop: -10,
+        },
 
         containerMain:{
             flex: 1,
@@ -110,6 +194,55 @@ import { KeyboardAvoidingView, View, StyleSheet,TouchableOpacity, Text, Image, T
         },
         contentNotAccount:{
             flexDirection: 'row'
+        },
+        inputPasswordArea:{
+            flexDirection: 'row',
+            backgroundColor: 'white',
+            width: '90%',
+            marginBottom: 15,
+            color: '#222',
+            fontSize: 17,
+            borderRadius: 7,
+            padding: 10,
+            alignItems: 'center',
+            justifyContent: 'space-between',
+        },
+        inputPassword:{
+            color: '#222',
+            fontSize: 17,
+            width: '100%'
+        },
+        inputWrongArea:{
+            flexDirection: 'row',
+            backgroundColor: 'white',
+            width: '90%',
+            marginBottom: 15,
+            color: '#222',
+            fontSize: 17,
+            borderRadius: 7,
+            borderColor: '#eb4034',
+            padding: 10,
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            borderWidth: 2,
+        },
+        inputRightArea:{
+            flexDirection: 'row',
+            backgroundColor: 'white',
+            width: '90%',
+            marginBottom: 15,
+            color: '#222',
+            fontSize: 17,
+            borderRadius: 7,
+            borderColor: '#63f291',
+            padding: 10,
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            borderWidth: 2,
+        },
+        iconEye:{
+            color: 'gray',
+            marginLeft: -15,
         }
 
     })

@@ -1,23 +1,30 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { View, StyleSheet, Text, StatusBar, TouchableOpacity, useWindowDimensions } from 'react-native'
 import Animated, {FadeInUp, FadeOutDown, FadeOutUp,RollOutRight} from 'react-native-reanimated'
+import { FIRESTORE_DB } from '../../firebaseConfig'
+import { collection, getDocs, onSnapshot, snapshotEqual } from "firebase/firestore";
+import LoadQuestions from '../hooks/LoadAllDoc';
+import LoadAllDoc from '../hooks/LoadAllDoc';
 
-    export default ListComponent = ({items , toggleModal, type}) => {
+    export default ListComponent = ({items , toggleModal, type}) => {    
+
     const {width} = useWindowDimensions();
 
         if (type == 'teaching'){
             return (
                 <>
+                    <Animated.View>
                     {items.map(el => {
                         return (
-                            <Animated.View key={el.title}>
-                                <Text key={el.title} style={styles.textTitleTeaching}>{el.title}</Text>
+                            <View key={el.title}>
+                                <Text style={styles.textTitleTeaching}>{el.title}</Text>
                                 {el.datas.map((data) => {
                                     return <TouchableOpacity onPress={()=> toggleModal(data)} key={data.id} activeOpacity={.9}><Text style={styles.textTeaching}>{data.teachingTitle}</Text></TouchableOpacity>
                                 })}
-                            </Animated.View>
+                            </View>
                         )
                     })}
+                    </Animated.View>
                 </>
             )
         }else if(type == 'schedule'){
@@ -28,11 +35,11 @@ import Animated, {FadeInUp, FadeOutDown, FadeOutUp,RollOutRight} from 'react-nat
                             return (
                                 <Animated.View key={el.day} style={styles.contentSchedule}>
                                     <View style={styles.contentTitle}><Text style={styles.textTitleSchedule}>{el.day}</Text></View>
-                                    <View key={el.day}>
+                                    <View style={{width: '100%'}} key={el.day}>
                                         {el.datas.map((data) => {
                                             {
                                                 if(data.desc){
-                                                    return <TouchableOpacity style={{width: width}} key={data.id} activeOpacity={.9}><Text style={styles.textSchedule}>{data.desc}, {data.hour}</Text></TouchableOpacity>
+                                                    return <TouchableOpacity style={{flex: 1, width: "100%"}} key={data.id} activeOpacity={.9}><Text style={styles.textSchedule}>{data.desc}, {data.hour}</Text></TouchableOpacity>
                                                 }
                                             }
                                         })}
@@ -42,6 +49,26 @@ import Animated, {FadeInUp, FadeOutDown, FadeOutUp,RollOutRight} from 'react-nat
                         }
                     })}
                 </>
+            )
+        }else if (type == 'chat'){
+            const questions = LoadAllDoc('Questions')
+            return (
+                <>
+                    {questions[0]?.question.map(question => {
+                        return(
+                            <>
+                                <Animated.View style={styles.contentSchedule}>
+                                    <View style={styles.contentTitle}><Text style={styles.textTitleSchedule}>{question.question.questing}</Text></View>
+                                    <View style={{width: '100%'}}>
+                                        <TouchableOpacity style={{flex: 1, width: "100%"}} activeOpacity={.9}><Text style={styles.textSchedule}>{question.question.question}</Text></TouchableOpacity>
+                                    </View>
+                                </Animated.View>
+                            </>    
+                        )
+                    
+                    })}
+                    
+                </>   
             )
         }
     }
@@ -84,13 +111,21 @@ import Animated, {FadeInUp, FadeOutDown, FadeOutUp,RollOutRight} from 'react-nat
         },
         textSchedule:{
             backgroundColor: '#10151f',
-            fontSize: 15,
+            fontSize: 14,
+            padding: 20,
+            color: '#fff',
+            borderWidth: 1,
+            width: '73%'
+        },
+        textTeaching:{
+            backgroundColor: '#10151f',
+            fontSize: 18,
             padding: 20,
             color: '#fff',
             borderWidth: 1,
         },
-        textTeaching:{
-            backgroundColor: '#10151f',
+        textTeachingEnd:{
+            backgroundColor: 'red',
             fontSize: 18,
             padding: 20,
             color: '#fff',
