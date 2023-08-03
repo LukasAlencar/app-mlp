@@ -7,7 +7,8 @@ import {
     ScrollView,
     TouchableOpacity,
     useWindowDimensions,
-    ActivityIndicator 
+    ActivityIndicator, 
+    Linking
 } from 'react-native'
 import * as ScreenOrientation from 'expo-screen-orientation'
 
@@ -20,6 +21,10 @@ const VIDEO_HEIGHT = 180
     export default ModalComponent = ({toggleModal, isModalVisible, selected}) => {
     const { width } = useWindowDimensions()
     const [videoReady, setVideoReady] = useState(false)
+
+    function openVerse(verses){
+      Linking.openURL(`https://www.biblegateway.com/passage/?search=${verses}&version=ARC`)
+    }
     
     const onFullScreenChange = useCallback((isFullScreen)=>{
         if(isFullScreen){
@@ -27,6 +32,7 @@ const VIDEO_HEIGHT = 180
         }else{
             ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT)
         }
+        
     },[])
         return (
             <View style={styles.container}>
@@ -38,7 +44,7 @@ const VIDEO_HEIGHT = 180
                         <ScrollView style={styles.container}>
                             <View style={styles.modalHeader}> 
                                 <Text style={styles.textId}>#{selected.id}</Text>
-                                <TouchableOpacity>
+                                <TouchableOpacity> 
                                     <Ionicons name="exit-outline" onPress={()=>{
                                     toggleModal('')
                                     setVideoReady(false)
@@ -48,7 +54,9 @@ const VIDEO_HEIGHT = 180
                             <View style={styles.contentData}>
                                 <Text style={styles.textTitle}>{selected.teachingTitle}</Text>
                                 <Text style={styles.textHeader}> Versículos: </Text>
-                                <Text style={styles.textVerses}>{selected.verses}</Text>
+                                <TouchableOpacity onPress={() =>{openVerse(selected.verses)}}>
+                                  <Text style={styles.textVerses}>{selected.verses}</Text>
+                                </TouchableOpacity>
                                 <Text style={styles.textHeader}> Descrição: </Text>
                                 <Text style={styles.textDescription}>{selected.teachingDescription}</Text>
                                 <Text style={styles.textHeader}> Vídeos</Text>
@@ -99,61 +107,63 @@ const VIDEO_HEIGHT = 180
             right: 0,
             opacity: 0,
             backgroundColor: 'black',
-          },
-          content: {
-            flex: 1,
-            justifyContent: 'center',
-          },
-          contentData:{
-            flex: 1,
-            textAlign: 'center',
-            justifyContent: 'center'
-          },
-          containerBox: {
-            zIndex: 2,
-            opacity: 1,
-            backgroundColor: 'transparent',
-          },
-          textModal:{
-            color: 'white',
-            fontSize: 30,
-          },
-          textTitle:{
-            fontSize: 24,
-            color: '#fff',
-            textAlign: 'center',
-            paddingBottom: 40,
+        },
+        content: {
+          flex: 1,
+          justifyContent: 'center',
+        },
+        contentData:{
+          flex: 1,
+          textAlign: 'center',
+          justifyContent: 'center'
+        },
+        containerBox: {
+          zIndex: 2,
+          opacity: 1,
+          backgroundColor: 'transparent',
+        },
+        textModal:{
+          color: 'white',
+          fontSize: 30,
+        },
+        textTitle:{
+          fontSize: 24,
+          color: '#fff',
+          textAlign: 'center',
+          paddingBottom: 40,
 
-          },
-          textId:{
-            color: '#28344d',
-            fontSize: 18,
-            paddingBottom: 20,
-          },
-          textHeader:{
-            color: '#28344d',
-            fontSize: 18,
-            paddingBottom: 10,
-          },
-          textVerses:{
-            color: 'white',
-            fontSize: 17,
-            paddingBottom: 20,
-            paddingLeft: 8,
-          },
-          textDescription:{
-            color: 'white',
-            fontSize: 17,
-            paddingBottom: 20,
-            paddingLeft: 8,
-          },
-          player:{
-            width: '100%',
-            height: VIDEO_HEIGHT,
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginBottom: 20,
-          }
+        },
+        textId:{
+          color: '#28344d',
+          fontSize: 18,
+          paddingBottom: 20,
+        },
+        textHeader:{
+          color: '#28344d',
+          fontSize: 18,
+          paddingBottom: 10,
+        },
+        textVerses:{
+          color: '#b8a24b',
+          fontSize: 17,
+          paddingBottom: 20,
+          paddingLeft: 8,
+          textDecorationStyle: 'solid',
+          textDecorationLine: 'underline'
+        },
+        textDescription:{
+          color: 'white',
+          fontSize: 17,
+          paddingBottom: 20,
+          paddingLeft: 8,
+        },
+        player:{
+          width: '100%',
+          height: VIDEO_HEIGHT,
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginBottom: 20,
+        }
           
           
     })  

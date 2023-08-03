@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons'
 
     const statusBarHeight = StatusBar.currentHeight ? StatusBar.currentHeight + 10 : 60; 
     export default Header = () => {
+
         return (
                 <View style={styles.header}>
                     <Image style={styles.logo} source={require('../../assets/logomlp.png')}/>

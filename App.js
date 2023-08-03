@@ -1,15 +1,17 @@
 import { StatusBar } from 'expo-status-bar';
 import { RefreshControl, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import Home from './src/pages/Home/Home'; 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Login from './src/pages/Login/Login';
 import Register from './src/pages/Register/Register';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { onAuthStateChanged } from 'firebase/auth';
 
 export default function App() {
   const [refreshing, setRefreshing] = useState(false);
   const {height} = useWindowDimensions();
+  
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     setTimeout(() => {
@@ -17,6 +19,8 @@ export default function App() {
     }, 2000);
   }, []);
 
+
+  
   const Stack = createNativeStackNavigator();
   return (
 
