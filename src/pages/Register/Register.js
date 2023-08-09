@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { KeyboardAvoidingView, View, StyleSheet,TouchableOpacity, Text, Image, TextInput} from 'react-native'
 import { FIRESTORE_DB } from '../../../firebaseConfig'
 import { addDoc, collection } from 'firebase/firestore'
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { Feather } from '@expo/vector-icons';
 
     export default Register = ({ navigation }) => {
@@ -22,11 +22,13 @@ import { Feather } from '@expo/vector-icons';
 
         const createUser =() =>{
             const auth = getAuth();
-            createUserWithEmailAndPassword(auth, email, password, name)
+            createUserWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 // Signed in 
-                const user = userCredential.user;
-                user.displayName = name
+                updateProfile(userCredential.user, {
+                    displayName: name,
+                    photoURL: 'https://png.pngtree.com/png-vector/20190710/ourlarge/pngtree-user-vector-avatar-png-image_1541962.jpg'
+                })
                 // ...
             })
             .catch((error) => {

@@ -1,11 +1,39 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { View, StyleSheet, Text, ScrollView, TouchableOpacity, Linking, TextInput } from 'react-native'
 import { color } from 'react-native-reanimated'
 import Question from './Chat/Question'
-
+import { FIRESTORE_DB } from '../../firebaseConfig'
+import { arrayUnion, collection, doc, setDoc, updateDoc } from "firebase/firestore"; 
+import { auth } from '../../firebaseConfig'
+import { getAuth } from 'firebase/auth'
 
     export default Chat = () => {
+
+        const [questionText, setQuestionText] = useState('');
+        const [seting, setSeting] = useState(false)
+        const [user, setUser] = useState()
+
+        const setQuestion = async () =>{
+            
+            const docRef = await doc(FIRESTORE_DB, "Questions", 'zArwtweJqCPEho31nACU');
+
+            await updateDoc(docRef, {
+                question: arrayUnion(
+                {
+                    question:
+                        {questing: auth.currentUser.displayName, question: questionText, imgUserQuesting: auth.currentUser.photoURL},
+                    responses:
+                        [{response: '30 anos', teacher: 'Hiago'}]
+                
+                })
+            }).then(() =>{
+                setQuestionText('')
+            });
+        
+        }
+        
+
         return (
             <View style={styles.container}>
                 <View style={styles.header}>
@@ -18,8 +46,10 @@ import Question from './Chat/Question'
                         placeholder='Faça uma pergunta...'
                         placeholderTextColor={'#fff'}
                         style={styles.textInput}
+                        onChangeText={(e) => setQuestionText(e)}
+                        value={questionText}
                     />
-                    <TouchableOpacity style={styles.buttonSendArea}>
+                    <TouchableOpacity onPress={setQuestion} style={styles.buttonSendArea}>
                         <Text style={styles.buttonSend}>
                             Enviar    
                         </Text>

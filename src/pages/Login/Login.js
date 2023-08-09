@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { KeyboardAvoidingView, View, StyleSheet,TouchableOpacity, Text, Image, TextInput, Vibration, Alert} from 'react-native'
+import { KeyboardAvoidingView, View, StyleSheet,TouchableOpacity, Text, Image, TextInput, Vibration, Alert, ActivityIndicator} from 'react-native'
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
 import notifee, { AndroidImportance } from '@notifee/react-native';
 import { Feather } from '@expo/vector-icons';
+import { auth } from '../../../firebaseConfig';
 
     export default Login = ({ navigation }) => {
 
@@ -11,6 +12,18 @@ import { Feather } from '@expo/vector-icons';
         const [seePassword, setSeePassword] = useState(false)
         const [user, setUser] = useState(null);
         const [errorText, setErrorText] = useState('');
+        const [loadingUser, setLoadingUser] = useState(true)
+
+        onAuthStateChanged(auth, (user)=>{
+            if(user){
+                navigation.navigate('Home', {
+                    userLog: JSON.stringify(user),
+                })
+            }else{
+                setLoadingUser(false)
+            }
+        })
+
         useEffect(()=>{
             const auth = getAuth();
             const subscriber = onAuthStateChanged(auth, setUser);
@@ -67,56 +80,70 @@ import { Feather } from '@expo/vector-icons';
             }
         }
 
-
-        return (
-            <KeyboardAvoidingView style={styles.background}>
-                <View style={styles.containerLogo}>
-                    <Image
-                        source={require('../../../assets/logomlp.png')}
-                    />
-                    <Text style={styles.textLogo}>Ministério Luz da Palavra</Text>
-                </View>
-                <View style={styles.container}>
-                    <View style={styles.errorArea}>
-                        {errorText && <Text style={styles.errorText}>{errorText}</Text>}
-                    </View>
-                    <TextInput
-                        style={styles.input}
-                        placeholder='Email'
-                        autoCorrect={false}
-                        onChangeText={(e)=>{setEmail(e)}}
-                    />
-
-                    <View style={styles.inputPasswordArea}>
-                        <TextInput
-                            style={styles.inputPassword}
-                            placeholder='Senha'
-                            autoCorrect={false}
-                            onChangeText={(e)=>{setPassword(e)}}
-                            secureTextEntry={!seePassword}
+        if(!loadingUser){
+            return (
+                <KeyboardAvoidingView style={styles.background}>
+                    <View style={styles.containerLogo}>
+                        <Image
+                            source={require('../../../assets/logomlp.png')}
                         />
-                        {!seePassword ? 
-                        <TouchableOpacity onPress={()=>{setSeePassword(!seePassword)}} style={styles.iconEye}>
-                            <Feather style={styles.iconEye}  name="eye" size={24} />
-                        </TouchableOpacity> :
-                        <TouchableOpacity onPress={()=>{setSeePassword(!seePassword)}} style={styles.iconEye}>
-                            <Feather style={styles.iconEye}  name="eye-off" size={24} />
-                        </TouchableOpacity>
-                        }
+                        <Text style={styles.textLogo}>Ministério Luz da Palavra</Text>
                     </View>
-                    {/* ()=>{navigation.navigate('Home')} */}
-                    <TouchableOpacity onPress={loginUser} style={styles.btnSubmit}>
-                        <Text style={styles.loginText}>Acessar</Text>
-                    </TouchableOpacity>
-                    <View style={styles.contentNotAccount}>
-                        <Text style={styles.registerText}>Não possui uma conta? </Text>
-                        <TouchableOpacity onPress={()=>{navigation.navigate('Register')}} style={styles.btnRegister}>
-                            <Text style={styles.registerTextLink}>Criar conta gratuita</Text>
+                    <View style={styles.container}>
+                        <View style={styles.errorArea}>
+                            {errorText && <Text style={styles.errorText}>{errorText}</Text>}
+                        </View>
+                        <TextInput
+                            style={styles.input}
+                            placeholder='Email'
+                            autoCorrect={false}
+                            onChangeText={(e)=>{setEmail(e)}}
+                        />
+
+                        <View style={styles.inputPasswordArea}>
+                            <TextInput
+                                style={styles.inputPassword}
+                                placeholder='Senha'
+                                autoCorrect={false}
+                                onChangeText={(e)=>{setPassword(e)}}
+                                secureTextEntry={!seePassword}
+                            />
+                            {!seePassword ? 
+                            <TouchableOpacity onPress={()=>{setSeePassword(!seePassword)}} style={styles.iconEye}>
+                                <Feather style={styles.iconEye}  name="eye" size={24} />
+                            </TouchableOpacity> :
+                            <TouchableOpacity onPress={()=>{setSeePassword(!seePassword)}} style={styles.iconEye}>
+                                <Feather style={styles.iconEye}  name="eye-off" size={24} />
+                            </TouchableOpacity>
+                            }
+                        </View>
+                        {/* ()=>{navigation.navigate('Home')} */}
+                        <TouchableOpacity onPress={loginUser} style={styles.btnSubmit}>
+                            <Text style={styles.loginText}>Acessar</Text>
                         </TouchableOpacity>
+                        <View style={styles.contentNotAccount}>
+                            <Text style={styles.registerText}>Não possui uma conta? </Text>
+                            <TouchableOpacity onPress={()=>{navigation.navigate('Register')}} style={styles.btnRegister}>
+                                <Text style={styles.registerTextLink}>Criar conta gratuita</Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
-                </View>
-            </KeyboardAvoidingView>
-        )
+                </KeyboardAvoidingView>
+            )
+        }else{
+            return(
+                <KeyboardAvoidingView style={styles.background}>
+                    <View style={styles.containerLogo}>
+                        <Image
+                            source={require('../../../assets/logomlp.png')}
+                        />
+                        <Text style={styles.textLogo}>Ministério Luz da Palavra</Text>
+                        <ActivityIndicator style={{marginTop:20}} color={'#FEDD58'}/>
+                    </View>
+                </KeyboardAvoidingView>
+            )
+            
+        }
     }
 
     const styles = StyleSheet.create({
