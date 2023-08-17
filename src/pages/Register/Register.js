@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { KeyboardAvoidingView, View, StyleSheet,TouchableOpacity, Text, Image, TextInput} from 'react-native'
-import { FIRESTORE_DB } from '../../../firebaseConfig'
+import { FIRESTORE_DB } from '../../../firebaseConfig.js'
 import { addDoc, collection } from 'firebase/firestore'
 import { getAuth, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { Feather } from '@expo/vector-icons';

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { View, StyleSheet, Text, StatusBar, TouchableOpacity, useWindowDimensions, Image, ImageBackground } from 'react-native'
 import Animated, {FadeInUp, FadeOutDown, FadeOutUp,RollOutRight} from 'react-native-reanimated'
-import { FIRESTORE_DB, auth } from '../../firebaseConfig'
+import { FIRESTORE_DB } from '../../firebaseConfig'
 import { collection, getDocs, onSnapshot, snapshotEqual } from "firebase/firestore";
 import useLoadDocs from '../hooks/useLoadDocs';
 

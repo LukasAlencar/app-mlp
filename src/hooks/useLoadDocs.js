@@ -6,7 +6,7 @@ export default useLoadDocs = (collections) => {
     const [data, setData] = useState();
         useEffect( () =>{
             const loadData = async () =>{
-                const docRef = await collection(FIRESTORE_DB, collections);
+                const docRef = await collection(FIRESTORE_DB, collections); 
                 const subscriber = await onSnapshot(docRef, {
                     next: (snapshot) => {
                         const dataAux = [];

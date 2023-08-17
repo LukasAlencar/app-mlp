@@ -5,7 +5,6 @@ import { color } from 'react-native-reanimated'
 import Question from './Chat/Question'
 import { FIRESTORE_DB } from '../../firebaseConfig'
 import { arrayUnion, collection, doc, setDoc, updateDoc } from "firebase/firestore"; 
-import { auth } from '../../firebaseConfig'
 import { getAuth } from 'firebase/auth'
 
     export default Chat = () => {
@@ -22,7 +21,7 @@ import { getAuth } from 'firebase/auth'
                 question: arrayUnion(
                 {
                     question:
-                        {questing: auth.currentUser.displayName, question: questionText, imgUserQuesting: auth.currentUser.photoURL},
+                        {questing: getAuth().currentUser.displayName, question: questionText, imgUserQuesting: getAuth().currentUser.photoURL},
                     responses:
                         [{response: '30 anos', teacher: 'Hiago'}]
                 

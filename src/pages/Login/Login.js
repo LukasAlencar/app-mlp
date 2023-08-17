@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { KeyboardAvoidingView, View, StyleSheet,TouchableOpacity, Text, Image, TextInput, Vibration, Alert, ActivityIndicator} from 'react-native'
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
-import notifee, { AndroidImportance } from '@notifee/react-native';
+// import notifee, { AndroidImportance } from '@notifee/react-native';
 import { Feather } from '@expo/vector-icons';
-import { auth } from '../../../firebaseConfig';
 
     export default Login = ({ navigation }) => {
 
@@ -14,7 +13,7 @@ import { auth } from '../../../firebaseConfig';
         const [errorText, setErrorText] = useState('');
         const [loadingUser, setLoadingUser] = useState(true)
 
-        onAuthStateChanged(auth, (user)=>{
+        onAuthStateChanged(getAuth(), (user)=>{
             if(user){
                 navigation.navigate('Home', {
                     userLog: JSON.stringify(user),
@@ -31,22 +30,22 @@ import { auth } from '../../../firebaseConfig';
             return subscriber;
 
         },[])
-        async function displayNotification(){
-            await notifee.requestPermission();
-            const channelId = await notifee.createChannel({
-                id: 'test',
-                name: 'MLP',
-                vibration: true,
-                importance: AndroidImportance.HIGH
-            });
+        // async function displayNotification(){
+        //     await notifee.requestPermission();
+        //     const channelId = await notifee.createChannel({
+        //         id: 'test',
+        //         name: 'MLP',
+        //         vibration: true,
+        //         importance: AndroidImportance.HIGH
+        //     });
 
-            await notifee.displayNotification({
-                id: '7',
-                title: 'Já leu hoje?',
-                body: 'Já leu o versiculo diario?',
-                android:{ channelId }
-            })
-        }
+        //     await notifee.displayNotification({
+        //         id: '7',
+        //         title: 'Já leu hoje?',
+        //         body: 'Já leu o versiculo diario?',
+        //         android:{ channelId }
+        //     })
+        // }
 
         // useEffect(() => {
         //     displayNotification();
